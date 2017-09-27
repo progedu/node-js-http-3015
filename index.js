@@ -14,9 +14,13 @@ const server = http.createServer((req, res) => {
 			rs.pipe(res);
 			break;
 		case 'POST':
-			req.on('data', (data) => {
-				const decoded = decodeURIComponent(data);
-				console.info('[' + now + '] 投稿: ' + decoded);
+			let body = [];
+			req.on('data', (chunk) => {
+				body.push(chunk);
+			}).on('end', () => {
+				body = Buffer.concat(body).toString();
+				console.info('[' + now + '] Data posted: ' + body);
+				const decoded = decodeURIComponent(body);
 				res.write('<!DOCTYPE html><html lang="jp"><head><meta charset="utf-8"></head><body><h1>' +
 					decoded + 'が投稿されました</h1></body></html>');
 				res.end();
